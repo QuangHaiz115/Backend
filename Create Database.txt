@@ -1,0 +1,75 @@
+create database NhaHangDB
+use database NhaHangDB
+CREATE TABLE [User] (
+    UserID INT PRIMARY KEY IDENTITY,
+    Username NVARCHAR(50) UNIQUE NOT NULL,
+    PasswordHash NVARCHAR(255) NOT NULL,
+    FullName NVARCHAR(100),
+    Email NVARCHAR(100),
+    Phone NVARCHAR(20),
+    Address NVARCHAR(255),
+    CreatedAt DATETIME DEFAULT GETDATE(),
+    Role INT NOT NULL CHECK (Role IN (1, 2)) -- 1: Admin, 2: Customer
+);
+
+CREATE TABLE Admin (
+    AdminID INT PRIMARY KEY,
+    FOREIGN KEY (AdminID) REFERENCES [User](UserID)
+    -- Thêm cột riêng nếu cần, ví dụ: quyền, cấp độ,...
+);
+
+CREATE TABLE Customer (
+    CustomerID INT PRIMARY KEY,
+    FOREIGN KEY (CustomerID) REFERENCES [User](UserID)
+);
+
+CREATE TABLE Chef (
+    ChefID INT PRIMARY KEY IDENTITY,
+    Name NVARCHAR(100),
+    Bio NVARCHAR(500),
+    ImageURL NVARCHAR(255),
+);
+
+CREATE TABLE Food (
+    FoodID INT PRIMARY KEY IDENTITY,
+    Name NVARCHAR(100),
+    Description NVARCHAR(255),
+    Price DECIMAL(10,2),
+    Category NVARCHAR(50), -- ví dụ: món chính, món phụ,...
+    ImageURL NVARCHAR(255),
+);
+
+CREATE TABLE Drink (
+    DrinkID INT PRIMARY KEY IDENTITY,
+    Name NVARCHAR(100),
+    Description NVARCHAR(255),
+    Price DECIMAL(10,2),
+    Size NVARCHAR(50), -- nhỏ, vừa, lớn
+    ImageURL NVARCHAR(255)
+);
+
+CREATE TABLE Orders (
+    OrderID INT PRIMARY KEY IDENTITY,
+    CustomerID INT,
+    OrderDate DATETIME DEFAULT GETDATE(),
+    TotalAmount DECIMAL(10,2),
+    Status NVARCHAR(50), -- ví dụ: Đã đặt, Đang giao, Hoàn thành,...
+    FOREIGN KEY (CustomerID) REFERENCES Customer(CustomerID)
+);
+
+
+CREATE TABLE OrderDetails (
+    OrderDetailID INT PRIMARY KEY IDENTITY,
+    OrderID INT,
+    ItemType NVARCHAR(10), -- 'Food' hoặc 'Drink'
+    ItemID INT,
+    Quantity INT,
+    Price DECIMAL(10,2),
+    FOREIGN KEY (OrderID) REFERENCES Orders(OrderID)
+    -- ItemID tham chiếu tuỳ theo ItemType nên không dùng khóa ngoại
+);
+
+
+
+
+
